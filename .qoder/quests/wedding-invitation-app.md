@@ -627,7 +627,486 @@ flowchart TD
     J --> H
 ```
 
-## Routing & Navigation
+## Mobile-First Component Specifications
+
+### Core UI Components
+
+#### Button Component System
+
+```typescript
+interface ButtonProps {
+  variant: 'primary' | 'secondary' | 'outline' | 'ghost' | 'icon'
+  size: 'sm' | 'md' | 'lg' | 'xl'
+  state: 'default' | 'loading' | 'disabled' | 'success' | 'error'
+  touchOptimized: boolean
+  hapticFeedback?: 'light' | 'medium' | 'heavy'
+}
+
+// Mobile-First Button Styles
+const buttonStyles = {
+  base: 'min-h-[44px] px-4 py-2 rounded-lg font-medium transition-all duration-200 active:scale-95',
+  
+  variants: {
+    primary: 'bg-rose-600 text-white shadow-lg active:bg-rose-700',
+    secondary: 'bg-rose-100 text-rose-700 active:bg-rose-200',
+    outline: 'border-2 border-rose-600 text-rose-600 active:bg-rose-50',
+    ghost: 'text-rose-600 active:bg-rose-50',
+    icon: 'p-3 min-h-[44px] w-[44px] rounded-full'
+  },
+  
+  sizes: {
+    sm: 'min-h-[40px] px-3 py-1.5 text-sm',
+    md: 'min-h-[44px] px-4 py-2 text-base',
+    lg: 'min-h-[48px] px-6 py-3 text-lg',
+    xl: 'min-h-[52px] px-8 py-4 text-xl'
+  }
+}
+```
+
+#### Input Component System
+
+```typescript
+interface InputProps {
+  type: 'text' | 'email' | 'tel' | 'password' | 'search' | 'date'
+  label: string
+  placeholder?: string
+  error?: string
+  required?: boolean
+  autoComplete?: string
+  inputMode?: 'text' | 'email' | 'tel' | 'numeric' | 'search'
+  enterKeyHint?: 'enter' | 'done' | 'go' | 'next' | 'search' | 'send'
+}
+
+// Mobile-Optimized Input Styles
+const inputStyles = {
+  container: 'w-full mb-4',
+  label: 'block text-sm font-medium text-gray-700 mb-2',
+  input: `
+    w-full min-h-[44px] px-4 py-3 
+    border border-gray-300 rounded-lg 
+    focus:ring-2 focus:ring-rose-500 focus:border-rose-500
+    text-base leading-tight
+    placeholder:text-gray-400
+    disabled:bg-gray-100 disabled:cursor-not-allowed
+  `,
+  error: 'mt-1 text-sm text-red-600',
+  success: 'mt-1 text-sm text-green-600'
+}
+```
+
+#### Card Component System
+
+```typescript
+interface CardProps {
+  variant: 'default' | 'elevated' | 'outline' | 'ghost'
+  padding: 'none' | 'sm' | 'md' | 'lg'
+  rounded: 'none' | 'sm' | 'md' | 'lg' | 'xl'
+  interactive?: boolean
+  loading?: boolean
+}
+
+// Mobile-First Card Implementation
+const cardStyles = {
+  base: 'bg-white transition-all duration-200',
+  
+  variants: {
+    default: 'shadow-sm border border-gray-200',
+    elevated: 'shadow-lg border-0',
+    outline: 'border-2 border-gray-300 shadow-none',
+    ghost: 'border-0 shadow-none bg-transparent'
+  },
+  
+  interactive: {
+    true: 'cursor-pointer active:scale-[0.98] hover:shadow-md',
+    false: ''
+  },
+  
+  padding: {
+    none: 'p-0',
+    sm: 'p-3',
+    md: 'p-4',
+    lg: 'p-6'
+  },
+  
+  rounded: {
+    none: 'rounded-none',
+    sm: 'rounded-sm',
+    md: 'rounded-lg',
+    lg: 'rounded-xl',
+    xl: 'rounded-2xl'
+  }
+}
+```
+
+### Layout Components
+
+#### Mobile Navigation Component
+
+```typescript
+interface MobileNavigationProps {
+  position: 'top' | 'bottom'
+  variant: 'tabs' | 'drawer' | 'floating'
+  items: NavigationItem[]
+  activeItem: string
+  onItemChange: (item: string) => void
+}
+
+interface NavigationItem {
+  id: string
+  label: string
+  icon: ReactNode
+  badge?: number
+  disabled?: boolean
+}
+
+// Bottom Tab Bar Implementation
+const mobileNavStyles = {
+  container: `
+    fixed bottom-0 left-0 right-0 z-50
+    bg-white border-t border-gray-200
+    safe-area-pb-4 pb-2
+    shadow-lg
+  `,
+  
+  tabList: 'flex items-center justify-around px-2',
+  
+  tab: `
+    flex flex-col items-center justify-center
+    min-h-[56px] px-3 py-2
+    text-xs font-medium
+    transition-colors duration-200
+    active:bg-gray-100 rounded-lg
+  `,
+  
+  activeTab: 'text-rose-600',
+  inactiveTab: 'text-gray-500',
+  
+  icon: 'w-6 h-6 mb-1',
+  badge: 'absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full min-w-[16px] h-4 flex items-center justify-center'
+}
+```
+
+#### Responsive Grid Component
+
+```typescript
+interface GridProps {
+  columns: {
+    mobile: number
+    tablet: number
+    desktop: number
+  }
+  gap: 'sm' | 'md' | 'lg'
+  children: ReactNode
+}
+
+// Mobile-First Grid System
+const gridStyles = {
+  container: 'grid w-full',
+  
+  columns: {
+    mobile: {
+      1: 'grid-cols-1',
+      2: 'grid-cols-2',
+      3: 'grid-cols-3'
+    },
+    tablet: {
+      1: 'md:grid-cols-1',
+      2: 'md:grid-cols-2',
+      3: 'md:grid-cols-3',
+      4: 'md:grid-cols-4'
+    },
+    desktop: {
+      1: 'lg:grid-cols-1',
+      2: 'lg:grid-cols-2',
+      3: 'lg:grid-cols-3',
+      4: 'lg:grid-cols-4',
+      5: 'lg:grid-cols-5',
+      6: 'lg:grid-cols-6'
+    }
+  },
+  
+  gaps: {
+    sm: 'gap-2',
+    md: 'gap-4',
+    lg: 'gap-6'
+  }
+}
+```
+
+### Feature Components
+
+#### Template Gallery Component
+
+```typescript
+interface TemplateGalleryProps {
+  templates: Template[]
+  selectedCategory?: string
+  searchQuery?: string
+  onTemplateSelect: (template: Template) => void
+  onCategoryChange: (category: string) => void
+  loading?: boolean
+}
+
+// Mobile-Optimized Template Gallery
+const templateGalleryStyles = {
+  container: 'w-full h-full flex flex-col',
+  
+  header: 'sticky top-0 z-40 bg-white border-b border-gray-200 p-4',
+  
+  searchBar: `
+    w-full min-h-[44px] px-4 py-3
+    border border-gray-300 rounded-lg
+    bg-gray-50 focus:bg-white
+    text-base placeholder:text-gray-500
+  `,
+  
+  categoryTabs: `
+    flex overflow-x-auto scrollbar-hide
+    gap-2 py-3 px-1
+    snap-x snap-mandatory
+  `,
+  
+  categoryTab: `
+    flex-shrink-0 px-4 py-2
+    rounded-full border text-sm font-medium
+    transition-all duration-200
+    snap-start
+    active:scale-95
+  `,
+  
+  activeCategory: 'bg-rose-600 text-white border-rose-600',
+  inactiveCategory: 'bg-white text-gray-700 border-gray-300 active:bg-gray-50',
+  
+  grid: `
+    flex-1 overflow-y-auto
+    grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4
+    gap-4 p-4
+  `,
+  
+  templateCard: `
+    aspect-[3/4] relative
+    rounded-xl overflow-hidden
+    shadow-sm border border-gray-200
+    transition-all duration-200
+    active:scale-[0.98]
+  `,
+  
+  templateImage: 'w-full h-full object-cover',
+  templateOverlay: 'absolute inset-0 bg-gradient-to-t from-black/60 to-transparent',
+  templateTitle: 'absolute bottom-0 left-0 right-0 p-3 text-white font-medium text-sm'
+}
+```
+
+#### Invitation Builder Component
+
+```typescript
+interface InvitationBuilderProps {
+  template: Template
+  invitation: Invitation
+  onUpdate: (updates: Partial<Invitation>) => void
+  onSave: () => void
+  onPreview: () => void
+}
+
+// Mobile-First Builder Layout
+const builderStyles = {
+  container: 'h-screen flex flex-col bg-gray-50',
+  
+  header: `
+    sticky top-0 z-50 bg-white border-b border-gray-200
+    flex items-center justify-between p-4
+    safe-area-pt-4
+  `,
+  
+  backButton: `
+    min-h-[44px] w-[44px] flex items-center justify-center
+    rounded-full active:bg-gray-100
+  `,
+  
+  title: 'text-lg font-semibold text-gray-900',
+  
+  actionButtons: 'flex items-center gap-2',
+  
+  content: 'flex-1 flex flex-col lg:flex-row',
+  
+  canvas: `
+    flex-1 overflow-auto p-4
+    flex items-center justify-center
+    bg-gray-100
+  `,
+  
+  invitation: `
+    w-full max-w-sm mx-auto
+    aspect-[3/4] bg-white
+    rounded-xl shadow-lg
+    overflow-hidden
+    transform scale-90 sm:scale-100
+  `,
+  
+  toolbar: `
+    lg:w-80 bg-white border-t lg:border-l lg:border-t-0
+    border-gray-200 flex flex-col
+  `,
+  
+  toolSection: 'border-b border-gray-200 last:border-b-0',
+  
+  toolHeader: `
+    flex items-center justify-between
+    p-4 bg-gray-50 border-b border-gray-200
+  `,
+  
+  toolContent: 'p-4 space-y-4'
+}
+```
+
+#### RSVP Form Component
+
+```typescript
+interface RSVPFormProps {
+  invitation: Invitation
+  onSubmit: (rsvp: RSVP) => void
+  loading?: boolean
+}
+
+// Mobile-Optimized RSVP Form
+const rsvpFormStyles = {
+  container: 'w-full max-w-md mx-auto p-4',
+  
+  header: 'text-center mb-6',
+  title: 'text-2xl font-bold text-gray-900 mb-2',
+  subtitle: 'text-gray-600',
+  
+  form: 'space-y-6',
+  
+  attendanceSection: `
+    bg-gray-50 rounded-xl p-4
+    border-2 border-transparent
+    transition-all duration-200
+  `,
+  
+  attendanceSelected: 'border-rose-500 bg-rose-50',
+  
+  attendanceButtons: 'grid grid-cols-2 gap-3 mt-3',
+  
+  attendanceButton: `
+    min-h-[52px] rounded-lg font-medium
+    transition-all duration-200
+    active:scale-95
+  `,
+  
+  attendingYes: 'bg-green-600 text-white active:bg-green-700',
+  attendingNo: 'bg-red-600 text-white active:bg-red-700',
+  attendingUnselected: 'bg-white border-2 border-gray-300 text-gray-700 active:bg-gray-50',
+  
+  guestCountSection: 'animate-in slide-in-from-top duration-300',
+  
+  mealPreferences: `
+    grid grid-cols-2 gap-2 mt-3
+  `,
+  
+  mealOption: `
+    min-h-[40px] px-3 py-2 rounded-lg
+    border-2 border-gray-300
+    text-sm font-medium text-center
+    transition-all duration-200
+    active:scale-95
+  `,
+  
+  mealSelected: 'border-rose-500 bg-rose-50 text-rose-700',
+  mealUnselected: 'bg-white text-gray-700 active:bg-gray-50',
+  
+  submitButton: `
+    w-full min-h-[52px] bg-rose-600 text-white
+    rounded-xl font-semibold text-lg
+    transition-all duration-200
+    active:scale-[0.98] active:bg-rose-700
+    disabled:opacity-50 disabled:cursor-not-allowed
+  `
+}
+```
+
+### Mobile Interaction Patterns
+
+#### Touch Gesture Handlers
+
+```typescript
+interface TouchGestureProps {
+  onTap?: () => void
+  onDoubleTap?: () => void
+  onLongPress?: () => void
+  onSwipeLeft?: () => void
+  onSwipeRight?: () => void
+  onSwipeUp?: () => void
+  onSwipeDown?: () => void
+  onPinch?: (scale: number) => void
+}
+
+// Mobile Gesture Implementation
+const useTouchGestures = (props: TouchGestureProps) => {
+  const gestureHandlers = {
+    onTouchStart: (event: TouchEvent) => {
+      // Record touch start position and time
+      // Initialize gesture detection
+    },
+    
+    onTouchMove: (event: TouchEvent) => {
+      // Track touch movement
+      // Detect swipe direction and distance
+      // Handle pinch gesture for zoom
+    },
+    
+    onTouchEnd: (event: TouchEvent) => {
+      // Determine gesture type based on movement
+      // Execute appropriate callback
+      // Provide haptic feedback
+    }
+  }
+  
+  return gestureHandlers
+}
+```
+
+#### Haptic Feedback System
+
+```typescript
+interface HapticFeedback {
+  light: () => void
+  medium: () => void
+  heavy: () => void
+  selection: () => void
+  notification: (type: 'success' | 'warning' | 'error') => void
+}
+
+const useHapticFeedback = (): HapticFeedback => {
+  const triggerHaptic = (pattern: 'light' | 'medium' | 'heavy') => {
+    if ('vibrate' in navigator) {
+      const patterns = {
+        light: [10],
+        medium: [20],
+        heavy: [30]
+      }
+      navigator.vibrate(patterns[pattern])
+    }
+  }
+  
+  return {
+    light: () => triggerHaptic('light'),
+    medium: () => triggerHaptic('medium'),
+    heavy: () => triggerHaptic('heavy'),
+    selection: () => triggerHaptic('light'),
+    notification: (type) => {
+      const patterns = {
+        success: [10, 50, 10],
+        warning: [20, 100, 20],
+        error: [30, 150, 30]
+      }
+      if ('vibrate' in navigator) {
+        navigator.vibrate(patterns[type])
+      }
+    }
+  }
+}
+```
 
 **Route Structure:**
 ```

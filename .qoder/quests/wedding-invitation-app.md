@@ -374,6 +374,259 @@ flowchart TD
     P --> Q
     Q --> R[Return to Invitation]
 
+### Advanced Action Flows
+
+#### Guest List Management Action Flow
+
+```mermaid
+flowchart TD
+    A[Open Guest Management] --> B{Guest List Empty?}
+    
+    B -->|Yes| C[Show Onboarding]
+    B -->|No| D[Display Guest List]
+    
+    C --> E[Add Guest Options]
+    E --> F{Add Method?}
+    
+    F -->|Manual| G[Single Guest Form]
+    F -->|Import| H[Contact Import]
+    F -->|Bulk| I[CSV Upload]
+    
+    G --> J[Validate Guest Data]
+    H --> K[Request Contact Permission]
+    I --> L[Parse CSV File]
+    
+    J --> M{Validation Passed?}
+    K --> N{Permission Granted?}
+    L --> O{Valid CSV Format?}
+    
+    M -->|Yes| P[Save Guest]
+    M -->|No| Q[Show Validation Errors]
+    
+    N -->|Yes| R[Access Contact List]
+    N -->|No| S[Fallback to Manual]
+    
+    O -->|Yes| T[Preview Import Data]
+    O -->|No| U[Show Format Error]
+    
+    P --> D
+    Q --> G
+    S --> G
+    U --> I
+    
+    R --> V[Select Multiple Contacts]
+    V --> W[Import Selected Guests]
+    W --> D
+    
+    T --> X[Confirm Import]
+    X --> Y[Batch Save Guests]
+    Y --> D
+```
+
+#### Real-time Collaboration Action Flow
+
+```mermaid
+sequenceDiagram
+    participant U1 as User 1 (Couple)
+    participant U2 as User 2 (Partner)
+    participant WS as WebSocket Server
+    participant DB as Database
+    participant UI as User Interface
+    
+    U1->>WS: Connect to invitation session
+    U2->>WS: Connect to same invitation
+    WS->>U1: Notify partner joined
+    WS->>U2: Notify partner joined
+    
+    U1->>UI: Edit invitation text
+    UI->>WS: Send text change event
+    WS->>U2: Broadcast text change
+    WS->>DB: Save change to database
+    
+    U2->>UI: Change invitation color
+    UI->>WS: Send color change event
+    WS->>U1: Broadcast color change
+    WS->>DB: Save change to database
+    
+    Note over WS: Conflict resolution
+    U1->>UI: Edit same element as U2
+    UI->>WS: Send conflicting change
+    WS->>WS: Apply last-write-wins
+    WS->>U1: Show conflict notification
+    WS->>U2: Show conflict notification
+```
+
+#### Payment Processing Action Flow
+
+```mermaid
+stateDiagram-v2
+    [*] --> FreeTier
+    
+    FreeTier --> PremiumUpgrade : User clicks upgrade
+    
+    PremiumUpgrade --> PaymentSelection : Choose premium plan
+    
+    PaymentSelection --> CreditCard : Credit card option
+    PaymentSelection --> PayPal : PayPal option
+    PaymentSelection --> ApplePay : Apple Pay (mobile)
+    PaymentSelection --> GooglePay : Google Pay (Android)
+    
+    CreditCard --> PaymentProcessing : Submit card details
+    PayPal --> PaymentProcessing : PayPal redirect
+    ApplePay --> PaymentProcessing : Biometric auth
+    GooglePay --> PaymentProcessing : Touch ID auth
+    
+    PaymentProcessing --> PaymentSuccess : Payment approved
+    PaymentProcessing --> PaymentFailed : Payment declined
+    
+    PaymentSuccess --> PremiumActive : Unlock premium features
+    PaymentFailed --> PaymentRetry : Show error message
+    
+    PaymentRetry --> PaymentSelection : Try different method
+    PaymentRetry --> FreeTier : Cancel upgrade
+    
+    PremiumActive --> [*] : Return to app
+```
+
+#### Notification Management Action Flow
+
+```mermaid
+flowchart LR
+    A[Event Trigger] --> B{Notification Type?}
+    
+    B -->|RSVP| C[RSVP Notification]
+    B -->|Reminder| D[Event Reminder]
+    B -->|Update| E[Invitation Update]
+    B -->|System| F[System Alert]
+    
+    C --> G[Check User Preferences]
+    D --> G
+    E --> G
+    F --> H[System Priority]
+    
+    G --> I{Notifications Enabled?}
+    H --> J[Force Send]
+    
+    I -->|Yes| K[Prepare Notification]
+    I -->|No| L[Skip Notification]
+    
+    K --> M{Device Online?}
+    J --> M
+    
+    M -->|Yes| N[Send Push Notification]
+    M -->|No| O[Queue for Later]
+    
+    N --> P[Track Delivery]
+    O --> Q[Background Sync Queue]
+    
+    P --> R[Update Analytics]
+    Q --> S[Retry When Online]
+```
+
+#### Template Customization Action Flow
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant E as Editor
+    participant P as Preview
+    participant S as State
+    participant A as Auto-save
+    
+    U->>E: Select element to edit
+    E->>S: Update selected element
+    E->>P: Highlight editable area
+    
+    U->>E: Modify text content
+    E->>S: Update text in real-time
+    S->>P: Render text changes
+    S->>A: Trigger auto-save timer
+    
+    U->>E: Change font style
+    E->>S: Update font properties
+    S->>P: Apply font changes
+    
+    U->>E: Adjust color scheme
+    E->>S: Update color palette
+    S->>P: Apply new colors
+    
+    Note over A: Auto-save after 2s
+    A->>A: Save draft to local storage
+    A->>S: Update save status
+    
+    U->>E: Upload custom image
+    E->>E: Validate image format
+    E->>E: Compress for mobile
+    E->>S: Update image reference
+    S->>P: Display new image
+```
+
+#### Search and Filter Action Flow
+
+```mermaid
+stateDiagram-v2
+    [*] --> BrowsingTemplates
+    
+    BrowsingTemplates --> SearchMode : User types in search
+    BrowsingTemplates --> FilterMode : User selects filter
+    
+    SearchMode --> SearchResults : Query executed
+    FilterMode --> FilteredResults : Filter applied
+    
+    SearchResults --> TemplateDetail : User selects template
+    FilteredResults --> TemplateDetail : User selects template
+    
+    SearchResults --> RefinedSearch : User modifies search
+    FilteredResults --> RefinedFilter : User adds filter
+    
+    RefinedSearch --> SearchResults : New search executed
+    RefinedFilter --> FilteredResults : Additional filter applied
+    
+    SearchResults --> BrowsingTemplates : Clear search
+    FilteredResults --> BrowsingTemplates : Clear filters
+    
+    TemplateDetail --> CustomizationMode : User selects template
+    TemplateDetail --> BrowsingTemplates : User goes back
+    
+    CustomizationMode --> [*] : Template customization started
+```
+
+#### Multi-language Support Action Flow
+
+```mermaid
+flowchart TD
+    A[User Opens App] --> B[Detect Browser Language]
+    B --> C{Supported Language?}
+    
+    C -->|Yes| D[Load Language Pack]
+    C -->|No| E[Default to English]
+    
+    D --> F[Apply Translations]
+    E --> F
+    
+    F --> G[Render UI]
+    G --> H[User Interaction]
+    
+    H --> I{Language Change?}
+    I -->|No| J[Continue Current Language]
+    I -->|Yes| K[Show Language Selector]
+    
+    K --> L[User Selects Language]
+    L --> M[Download Language Pack]
+    M --> N{RTL Language?}
+    
+    N -->|Yes| O[Apply RTL Layout]
+    N -->|No| P[Apply LTR Layout]
+    
+    O --> Q[Re-render with New Language]
+    P --> Q
+    
+    Q --> R[Save Language Preference]
+    R --> G
+    
+    J --> H
+```
+
 ## Routing & Navigation
 
 **Route Structure:**
